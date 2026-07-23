@@ -1,0 +1,19 @@
+[window.dimensions]
+columns = 100
+lines = 30
+
+[font]
+builtin_box_drawing = true
+size = 12
+
+[font.normal]
+family = "DroidSansM Nerd Font"
+style = "Regular"
+
+[window]
+opacity = 1.0
+
+[general]
+import = [
+    "~/.config/alacritty/themes/github_light.toml"
+]
