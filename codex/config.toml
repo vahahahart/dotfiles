@@ -1,0 +1,67 @@
+approvals_reviewer = "auto_review"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+
+[projects."/home/vah/Work/ai_xps"]
+trust_level = "trusted"
+
+[projects."/home/vah"]
+trust_level = "trusted"
+
+[projects."/home/vah/Work"]
+trust_level = "trusted"
+
+[projects."/home/vah/Work/lpr"]
+trust_level = "trusted"
+
+[projects."/home/vah/Work/presentations"]
+trust_level = "trusted"
+
+[projects."/home/vah/Work/images-comparer"]
+trust_level = "trusted"
+
+[projects."/home/vah/Work/ai-xps-series"]
+trust_level = "trusted"
+
+[projects."/home/vah/dotfiles"]
+trust_level = "trusted"
+
+[projects."/home/vah/Work/uni"]
+trust_level = "trusted"
+
+[tui]
+screen_reader_detection_done = true
+vim_mode_default = false
+alternate_screen = "never"
+
+[tui.model_availability_nux]
+gpt-6-astra = 4
+"gpt-6.1-sol" = 4
+
+# Alt bindings belong to tmux; Codex uses Ctrl and function keys.
+[tui.keymap.global]
+open_agents = ["ctrl-]", "f3"]
+open_transcript = ["ctrl-t", "f2"]
+copy = ["ctrl-o", "f4"]
+open_external_editor = "ctrl-g"
+submit = "enter"
+
+# Enter sends; Shift+Enter inserts a newline; F6 queues a prompt.
+[tui.keymap.composer]
+submit = "enter"
+queue = "f6"
+
+[tui.keymap.editor]
+insert_newline = ["shift-enter", "ctrl-j"]
+
+[tui.keymap.pager]
+scroll_up = ["k", "up"]
+scroll_down = ["j", "down"]
+half_page_up = "ctrl-u"
+half_page_down = "ctrl-d"
+jump_top = ["g", "home"]
+jump_bottom = ["shift-g", "end"]
+find = "/"
+# Esc is reserved by Codex's transcript editor action.
+close = ["q", "f10"]
+
