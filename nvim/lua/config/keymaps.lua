@@ -5,4 +5,3 @@ vim.keymap.set("n", "<leader>w", "<cmd>write<CR>", {
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", {
   desc = "Убрать подсветку поиска",
 })
-

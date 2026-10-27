@@ -21,4 +21,3 @@ vim.opt.langmap = table.concat({
   [[ё`,Ё~,х[,Х{,ъ],Ъ},ж\;,Ж:,э',Э\",б\,,Б<,ю.,Ю>]],
 }, ",")
 vim.opt.langremap = false
-
