@@ -1,6 +1,7 @@
 approvals_reviewer = "auto_review"
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
+service_tier = "default"
 
 [projects."/home/vah/Work/ai_xps"]
 trust_level = "trusted"
@@ -33,6 +34,10 @@ trust_level = "trusted"
 screen_reader_detection_done = true
 vim_mode_default = false
 alternate_screen = "never"
+resume_cwd = "session"
+agents_overview_grouping = "project"
+status_line = ["model-with-reasoning", "current-dir", "thread-name", "five-hour-limit", "weekly-limit", "git-branch"]
+status_line_use_colors = true
 
 [tui.model_availability_nux]
 gpt-6-astra = 4
@@ -64,4 +69,7 @@ jump_bottom = ["shift-g", "end"]
 find = "/"
 # Esc is reserved by Codex's transcript editor action.
 close = ["q", "f10"]
+
+[notice.model_migrations]
+"gpt-5.6-sol" = "gpt-6-sol"
 
