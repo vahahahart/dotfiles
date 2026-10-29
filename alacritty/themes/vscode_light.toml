@@ -1,0 +1,41 @@
+# VS Code Light+ palette, adapted from vscode.nvim's Alacritty theme.
+# Match the editor's Normal foreground and background.
+[colors.primary]
+background = '#ffffff'
+foreground = '#343434'
+
+[colors.cursor]
+text = '#ffffff'
+cursor = '#264f78'
+
+[colors.selection]
+text = 'CellForeground'
+background = '#add6ff'
+
+[colors.normal]
+black = '#1f1f1f'
+red = '#f44747'
+green = '#6a9955'
+yellow = '#795e26'
+blue = '#007acc'
+magenta = '#af00db'
+cyan = '#56b6c2'
+white = '#d4d4d4'
+
+[colors.bright]
+black = '#808080'
+red = '#f44747'
+green = '#6a9955'
+yellow = '#795e26'
+blue = '#007acc'
+magenta = '#af00db'
+cyan = '#56b6c2'
+white = '#d4d4d4'
+
+[[colors.indexed_colors]]
+index = 16
+color = '#c72e0f'
+
+[[colors.indexed_colors]]
+index = 17
+color = '#f44747'

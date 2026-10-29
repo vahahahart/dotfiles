@@ -15,7 +15,7 @@ opacity = 1.0
 
 [general]
 import = [
-    "~/.config/alacritty/themes/github_light.toml",
+    "~/.config/alacritty/themes/vscode_light.toml",
     "~/.config/alacritty/themes/current.toml"
 ]
 live_config_reload = true

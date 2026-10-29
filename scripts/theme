@@ -134,7 +134,7 @@ old_theme=
 if [[ -f "$state_dir/current" ]]; then
   read -r old_theme < "$state_dir/current"
 fi
-palette="$repo_dir/alacritty/themes/github_light.toml"
+palette="$repo_dir/alacritty/themes/vscode_light.toml"
 if [[ "$theme" == dark ]]; then
   palette="$repo_dir/alacritty/themes/vscode_dark.toml"
 fi

@@ -31,7 +31,8 @@ every minute, when the systemd user manager starts, and after a missed run.
 Changing the schedule does not require reinstalling the timer. The timer does
 not override a manual selection.
 
-Alacritty uses the existing GitHub Light palette or the VS Code Dark+ palette.
+Alacritty uses VS Code Light+ and Dark+ palettes. The light palette's default
+foreground and background match the Neovim theme.
 The script generates `alacritty/themes/current.toml`, which is ignored by Git.
 Alacritty reloads it without restarting. When tmux is running, the script updates
 its colors and reapplies the `tmux-dotbar` styling. It targets the current tmux
