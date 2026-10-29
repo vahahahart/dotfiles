@@ -13,6 +13,7 @@ vim.opt.splitbelow = true
 vim.opt.signcolumn = "yes"
 vim.opt.scrolloff = 6
 vim.opt.undofile = true
+vim.opt.termguicolors = true
 
 -- Russian ЙЦУКЕН keys act as QWERTY commands; text input stays Russian.
 vim.opt.langmap = table.concat({

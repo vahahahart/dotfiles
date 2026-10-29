@@ -1,0 +1,6 @@
+[Unit]
+Description=Apply the dotfiles light or dark theme
+
+[Service]
+Type=oneshot
+ExecStart=%h/dotfiles/scripts/theme apply

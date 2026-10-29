@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_dir=$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles-theme"
+action=${1:-status}
+
+usage() {
+  cat <<'EOF'
+Usage: theme light|dark|auto|status|install-timer
+  light, dark    Keep this mode until 'theme auto'.
+  auto           Choose by themes/schedule.conf and enable automatic mode.
+  status         Show the saved mode and currently applied theme.
+  install-timer  Install and enable the user systemd timer (no sudo).
+  apply          Apply the saved mode (used by the timer).
+  tmux           Apply only tmux colors (used by tmux.conf).
+EOF
+}
+
+case "$action" in
+  light|dark|auto|apply|status|install-timer|tmux) ;;
+  -h|--help) usage; exit 0 ;;
+  *) usage >&2; exit 2 ;;
+esac
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
+
+if [[ "$action" == install-timer ]]; then
+  unit_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+  mkdir -p "$unit_dir"
+  for unit in dotfiles-theme.service dotfiles-theme.timer; do
+    destination="$unit_dir/$unit"
+    source_file="$repo_dir/systemd/user/$unit"
+    if [[ -e "$destination" || -L "$destination" ]]; then
+      if [[ "$(readlink -f "$destination")" != "$source_file" ]]; then
+        printf 'Refusing to replace existing unit: %s\n' "$destination" >&2
+        exit 1
+      fi
+    else
+      ln -s "$source_file" "$destination"
+    fi
+  done
+  "$repo_dir/scripts/theme" apply
+  systemctl --user daemon-reload
+  systemctl --user enable --now dotfiles-theme.timer
+  exit 0
+fi
+
+mode=auto
+if [[ -f "$state_dir/mode" ]]; then
+  read -r mode < "$state_dir/mode"
+fi
+case "$mode" in
+  light|dark|auto) ;;
+  *) printf 'Invalid saved theme mode: %s\n' "$mode" >&2; exit 1 ;;
+esac
+
+if [[ "$action" == status ]]; then
+  current=uninitialized
+  if [[ -f "$state_dir/current" ]]; then
+    read -r current < "$state_dir/current"
+  fi
+  printf 'mode=%s\ncurrent=%s\n' "$mode" "$current"
+  exit 0
+fi
+
+mkdir -p "$state_dir"
+exec 9>"$state_dir/lock"
+flock 9
+# Re-read after locking so a timer cannot overwrite a simultaneous manual choice.
+if [[ -f "$state_dir/mode" ]]; then
+  read -r mode < "$state_dir/mode"
+fi
+case "$action" in
+  light|dark|auto) mode=$action ;;
+esac
+case "$mode" in
+  light|dark|auto) ;;
+  *) printf 'Invalid saved theme mode: %s\n' "$mode" >&2; exit 1 ;;
+esac
+
+theme=$mode
+if [[ "$mode" == auto ]]; then
+  # This is a trusted shell config from the dotfiles repository.
+  source "$repo_dir/themes/schedule.conf"
+  for value in "$LIGHT_START" "$DARK_START"; do
+    if [[ ! "$value" =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]; then
+      printf 'Invalid schedule time: %s (expected HH:MM)\n' "$value" >&2
+      exit 1
+    fi
+  done
+  light_minutes=$((10#${LIGHT_START%:*} * 60 + 10#${LIGHT_START#*:}))
+  dark_minutes=$((10#${DARK_START%:*} * 60 + 10#${DARK_START#*:}))
+  if (( light_minutes == dark_minutes )); then
+    printf 'LIGHT_START and DARK_START must differ\n' >&2
+    exit 1
+  fi
+  now=$(date +%H:%M)
+  now_minutes=$((10#${now%:*} * 60 + 10#${now#*:}))
+  theme=dark
+  if (( light_minutes < dark_minutes )); then
+    if (( now_minutes >= light_minutes && now_minutes < dark_minutes )); then
+      theme=light
+    fi
+  elif (( now_minutes >= light_minutes || now_minutes < dark_minutes )); then
+    theme=light
+  fi
+fi
+
+apply_tmux() {
+  if ! command -v tmux >/dev/null || ! tmux list-sessions >/dev/null 2>&1; then
+    return
+  fi
+  tmux source-file "$repo_dir/tmux/themes/$theme.conf"
+  # Dotbar embeds colors in its formats; changing its options alone is not enough.
+  local plugin_dir
+  for plugin_dir in "${TMUX_PLUGIN_MANAGER_PATH:-$HOME/.tmux/plugins}" \
+    "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins"; do
+    if [[ -f "$plugin_dir/tmux-dotbar/dotbar.tmux" ]]; then
+      bash "$plugin_dir/tmux-dotbar/dotbar.tmux"
+      return
+    fi
+  done
+}
+
+if [[ "$action" == tmux ]]; then
+  apply_tmux
+  exit 0
+fi
+
+old_theme=
+if [[ -f "$state_dir/current" ]]; then
+  read -r old_theme < "$state_dir/current"
+fi
+palette="$repo_dir/alacritty/themes/github_light.toml"
+if [[ "$theme" == dark ]]; then
+  palette="$repo_dir/alacritty/themes/vscode_dark.toml"
+fi
+palette_changed=false
+if ! cmp -s "$palette" "$repo_dir/alacritty/themes/current.toml"; then
+  palette_tmp=$(mktemp "$repo_dir/alacritty/themes/.current.XXXXXX")
+  cp "$palette" "$palette_tmp"
+  mv "$palette_tmp" "$repo_dir/alacritty/themes/current.toml"
+  # Also reload windows opened before the generated import first existed.
+  touch "$repo_dir/alacritty/alacritty.toml"
+  palette_changed=true
+fi
+
+if [[ "$theme" != "$old_theme" || "$palette_changed" == true || "$action" != apply ]]; then
+  apply_tmux
+fi
+# Publish only after applying the other programs; readers never see partial files.
+printf '%s\n' "$mode" > "$state_dir/mode.tmp"
+mv "$state_dir/mode.tmp" "$state_dir/mode"
+printf '%s\n' "$theme" > "$state_dir/current.tmp"
+mv "$state_dir/current.tmp" "$state_dir/current"
+if [[ "$action" != apply ]]; then
+  printf 'mode=%s\ncurrent=%s\n' "$mode" "$theme"
+fi

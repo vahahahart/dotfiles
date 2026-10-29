@@ -1,0 +1,11 @@
+[Unit]
+Description=Check the dotfiles theme schedule every minute
+
+[Timer]
+OnStartupSec=5s
+OnCalendar=*-*-* *:*:00
+AccuracySec=1s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
