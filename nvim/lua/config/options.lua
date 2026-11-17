@@ -15,6 +15,28 @@ vim.opt.scrolloff = 6
 vim.opt.undofile = true
 vim.opt.termguicolors = true
 
+vim.diagnostic.config({
+  underline = true,
+  severity_sort = true,
+  update_in_insert = false,
+  virtual_text = {
+    spacing = 2,
+    source = "if_many",
+  },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "E",
+      [vim.diagnostic.severity.WARN] = "W",
+      [vim.diagnostic.severity.INFO] = "I",
+      [vim.diagnostic.severity.HINT] = "H",
+    },
+  },
+  float = {
+    border = "rounded",
+    source = "if_many",
+  },
+})
+
 -- Russian ЙЦУКЕН keys act as QWERTY commands; text input stays Russian.
 vim.opt.langmap = table.concat({
   "йцукенгшщзфывапролдячсмить;qwertyuiopasdfghjklzxcvbnm",

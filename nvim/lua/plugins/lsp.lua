@@ -23,17 +23,21 @@ return {
           })
         end
 
-        map("gd", vim.lsp.buf.definition, "Перейти к определению")
-        map("K", vim.lsp.buf.hover, "Документация")
-        map("<leader>rn", vim.lsp.buf.rename, "Переименовать символ")
-        map("<leader>ca", vim.lsp.buf.code_action, "Исправления")
-
+        map("gd", vim.lsp.buf.definition, "Go to definition")
+        map("K", vim.lsp.buf.hover, "Show documentation")
+        map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+        map("<leader>ca", vim.lsp.buf.code_action, "Code actions")
         map("<leader>f", function()
           vim.lsp.buf.format({
             bufnr = event.buf,
-            name = "ruff",
+            filter = function(format_client)
+              if vim.bo[event.buf].filetype == "python" then
+                return format_client.name == "ruff"
+              end
+              return true
+            end,
           })
-        end, "Форматировать через Ruff")
+        end, "Format file")
       end,
     })
 
@@ -46,7 +50,7 @@ return {
           end
 
           local root = vim.fs.root(bufnr, { "pyproject.toml" })
-            or vim.fs.dirname(filename)
+          or vim.fs.dirname(filename)
 
           on_dir(root)
         end,
@@ -71,6 +75,7 @@ return {
     project_server("ty")
     project_server("ruff")
 
-    vim.lsp.enable({ "ty", "ruff" })
+    vim.lsp.enable({ "ty", "ruff", "rust_analyzer" })
   end,
 }
+
