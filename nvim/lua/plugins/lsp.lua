@@ -27,7 +27,7 @@ return {
         map("K", vim.lsp.buf.hover, "Show documentation")
         map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
         map("<leader>ca", vim.lsp.buf.code_action, "Code actions")
-        map("<leader>f", function()
+        map("<leader>cf", function()
           vim.lsp.buf.format({
             bufnr = event.buf,
             filter = function(format_client)
